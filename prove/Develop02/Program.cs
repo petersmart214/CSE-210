@@ -1,10 +1,4 @@
 
-
-using System.Diagnostics;
-using System.Net;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -13,38 +7,44 @@ class Program
     //static variables are iffy, but in this case I like the modularity of it (avoid needing passing journals into menuAction delegates, useful for, say, loading a new Journal)
     static readonly string[] DEFAULT_PROMPTS = ["What was something interesting that happened today?", "How are you feeling now?", "What from today would you like to happen again?", "What things did you complete today? (even just things like work or school count!)", "What was your favorite thing from today?"];
     static Journal _openedJournal;
-    
-    static void Main(string[] args) {
-        Menu tmpMenu = new Menu().addOption("Load Journal", loadJournal).addOption("Save Journal", saveJournal).addOption("Add Journal Entry", addEntryJournal).addOption("Remove Journal Entry", removeEntryJournal).addOption("View Journal Entries", viewJournalEntries);
-        while(true) {
+
+    static void Main(string[] args)
+    {
+        Menu tmpMenu = new Menu().AddOption("Load Journal", LoadJournal).AddOption("Save Journal", SaveJournal).AddOption("Add Journal Entry", AddEntryJournal).AddOption("Remove Journal Entry", RemoveEntryJournal).AddOption("View Journal Entries", viewJournalEntries);
+        while (true)
+        {
             Console.Clear();
-            tmpMenu.displayMenu();
+            tmpMenu.DisplayMenu();
         }
     }
-    
-    static void addEntryJournal() {
-        if(!checkOpenedJournal()) return;
+
+    static void AddEntryJournal()
+    {
+        if (!CheckOpenedJournal()) return;
         //print instructions, then ask for name, then data
         Console.WriteLine("Please name this entry, and then a prompt will be given");
         string tmpname = Console.ReadLine();
         string tmpdata = "";
         string tmpprompt = "";
-        while(true) {
-            tmpprompt = Program._openedJournal.generatePrompt();
+        while (true)
+        {
+            tmpprompt = Program._openedJournal.GeneratePrompt();
             Console.WriteLine(tmpprompt);
             Console.WriteLine("Write something in response to this prompt, or enter / to regenerate the given prompt.");
             tmpdata = Console.ReadLine();
             if (!tmpdata.Equals("/")) break;
         }
-        Program._openedJournal.addEntry(new JournalEntry(tmpname, tmpprompt, tmpdata));
+        Program._openedJournal.AddEntry(new JournalEntry(tmpname, tmpprompt, tmpdata));
 
         Console.WriteLine("Input anything to return");
         Console.ReadLine();
     }
 
-    static void viewJournalEntries() {
-        if(!checkOpenedJournal()) return;
-        foreach (JournalEntry entry in Program._openedJournal._entries) {
+    static void viewJournalEntries()
+    {
+        if (!CheckOpenedJournal()) return;
+        foreach (JournalEntry entry in Program._openedJournal._entries)
+        {
             Console.WriteLine($"{entry._name} / {entry._usedPrompt} : {entry._data} @ {entry._time}");
         }
 
@@ -52,28 +52,33 @@ class Program
         Console.ReadLine();
     }
 
-    static void removeEntryJournal() {
-        if(!checkOpenedJournal()) return;
+    static void RemoveEntryJournal()
+    {
+        if (!CheckOpenedJournal()) return;
         Console.WriteLine("Please input the name of the entry you want to remove");
         string toRemove = Console.ReadLine();
-        Boolean successful = Program._openedJournal.removeEntry(toRemove);
+        Boolean successful = Program._openedJournal.RemoveEntry(toRemove);
         Console.WriteLine(successful ? "Removal successful..." : "Removal failed...");
         Console.WriteLine("Input anything to return");
         Console.ReadLine();
     }
 
-    static void saveJournal() {
+    static void SaveJournal()
+    {
         Console.WriteLine("Please input the name you want this Journal to be saved as");
         string fileName = string.Concat(Console.ReadLine(), ".json");
         Boolean successful = false;
-        try {
+        try
+        {
             System.IO.StreamWriter file = new System.IO.StreamWriter(fileName);
             file.Write(JsonSerializer.Serialize(_openedJournal));
             file.Close();
             successful = true;
-        } catch (Exception e) {
-                //TODO: dont just print out errors, maybe log or some such
-                Console.WriteLine($"Error while saving: {e}");
+        }
+        catch (Exception e)
+        {
+            //TODO: dont just print out errors, maybe log or some such
+            Console.WriteLine($"Error while saving: {e}");
         }
         Console.WriteLine(successful ? "Save successful..." : "Save failed...");
 
@@ -81,17 +86,22 @@ class Program
         Console.ReadLine();
     }
 
-    static void loadJournal() {
+    static void LoadJournal()
+    {
         Console.WriteLine("Please input the file name of the Journal to load, or input NEW to make a new Journal");
         string fileToLoad = Console.ReadLine();
-        if(fileToLoad.Equals("NEW")) {
+        if (fileToLoad.Equals("NEW"))
+        {
             //using just a generic default prompts const, would be dynamic in other situations but thats beyond this projects scope
             Program._openedJournal = new Journal(Program.DEFAULT_PROMPTS);
             return;
         }
-        try {
+        try
+        {
             Program._openedJournal = JsonSerializer.Deserialize<Journal>(File.ReadAllText(string.Concat(fileToLoad, ".json")));
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             //Maybe hacky? might be better to just let it die without printing this
             Console.WriteLine($"Could not load any entries from local files due to exception: {e}");
             Console.WriteLine("Input anything to return");
@@ -101,8 +111,10 @@ class Program
         }
     }
 
-    static Boolean checkOpenedJournal() {
-        if (Program._openedJournal == null) {
+    static Boolean CheckOpenedJournal()
+    {
+        if (Program._openedJournal == null)
+        {
             Console.WriteLine("You have not yet loaded a Journal! Load a Journal to get started!");
             Console.WriteLine("Input anything to return");
             Console.ReadLine();
@@ -136,14 +148,14 @@ class Journal
         this._entries = new List<JournalEntry>();
     }
 
-    public Boolean addEntry(JournalEntry entry)
+    public Boolean AddEntry(JournalEntry entry)
     {
         _entries.Add(entry);
         //returns for consistancy
         return true;
     }
 
-    public Boolean removeEntry(string nameToRemove)
+    public Boolean RemoveEntry(string nameToRemove)
     {
         if (!_entries.Any()) return false;
         if (nameToRemove.Equals("last"))
@@ -166,7 +178,8 @@ class Journal
         }
         return false;
     }
-    public string generatePrompt() {
+    public string GeneratePrompt()
+    {
         Random tmprand = new Random();
         return this._prompts[tmprand.Next(0, this._prompts.Length)];
     }
@@ -217,13 +230,13 @@ class Menu
         _menuOptions = new List<MenuOption>();
     }
 
-    public Menu addOption(string name, menuAction action)
+    public Menu AddOption(string name, menuAction action)
     {
         _menuOptions.Add(new MenuOption(name, action));
         return this;
     }
 
-    public void displayMenu()
+    public void DisplayMenu()
     {
         Console.Clear();
         int iter = 1;
