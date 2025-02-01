@@ -2,6 +2,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+//To exceed: I added delegates for dynamic menu changes, used json, allow multiple files (journals) to be supported, and allow removal of certain entries
+
 class Program
 {
     //static variables are iffy, but in this case I like the modularity of it (avoid needing passing journals into menuAction delegates, useful for, say, loading a new Journal)
