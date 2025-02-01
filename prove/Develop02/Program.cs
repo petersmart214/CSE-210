@@ -12,7 +12,7 @@ class Program
 
     static void Main(string[] args)
     {
-        Menu tmpMenu = new Menu().AddOption("Load Journal", LoadJournal).AddOption("Save Journal", SaveJournal).AddOption("Add Journal Entry", AddEntryJournal).AddOption("Remove Journal Entry", RemoveEntryJournal).AddOption("View Journal Entries", viewJournalEntries);
+        Menu tmpMenu = new Menu().AddOption("Load Journal", LoadJournal).AddOption("Save Journal", SaveJournal).AddOption("Add Journal Entry", AddEntryJournal).AddOption("Remove Journal Entry", RemoveEntryJournal).AddOption("View Journal Entries", ViewJournalEntries);
         while (true)
         {
             Console.Clear();
@@ -42,7 +42,7 @@ class Program
         Console.ReadLine();
     }
 
-    static void viewJournalEntries()
+    static void ViewJournalEntries()
     {
         if (!CheckOpenedJournal()) return;
         foreach (JournalEntry entry in Program._openedJournal._entries)
