@@ -12,27 +12,32 @@ class Program
 }
 
 
-class Assignment {
+class Assignment
+{
 
     private string _studentName;
     private string _topic;
 
-    public Assignment(string studentName, string topic) {
+    public Assignment(string studentName, string topic)
+    {
         _studentName = studentName;
         _topic = topic;
     }
 
-    public virtual string GetSummary() {
+    public virtual string GetSummary()
+    {
         return $"{_studentName} - {_topic}";
     }
 }
 
 
-class MathAssignment : Assignment {
+class MathAssignment : Assignment
+{
     private string _textbookSection;
     private string _problems;
 
-    public MathAssignment(string studentName, string topic, string textbookSection, string problems) : base(studentName, topic) {
+    public MathAssignment(string studentName, string topic, string textbookSection, string problems) : base(studentName, topic)
+    {
         _textbookSection = textbookSection;
         _problems = problems;
     }
@@ -43,13 +48,16 @@ class MathAssignment : Assignment {
     }
 }
 
-class WritingAssignment : Assignment {
+class WritingAssignment : Assignment
+{
     private string _title;
-    public WritingAssignment(string studentName, string topic, string title) : base(studentName, topic) {
+    public WritingAssignment(string studentName, string topic, string title) : base(studentName, topic)
+    {
         _title = title;
     }
 
-    public override string GetSummary() {
+    public override string GetSummary()
+    {
         return $"{base.GetSummary()}\n{_title}";
     }
 }
