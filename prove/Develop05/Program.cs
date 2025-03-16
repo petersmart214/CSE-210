@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.Design.Serialization;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Runtime.InteropServices.Marshalling;
 using System.Security.Principal;
 using System.Text.Json;
@@ -14,6 +15,7 @@ class Program
     static List<Player> player_list = new List<Player>();
     const string filename = "default";
     const string OBJ_SEPERATOR = "\n|\n";
+    public static SimpleGoal FILLER_GOAL = new SimpleGoal("Make a goal", "Use this program to make a goal.", 100);
     public static void Main(string[] args)
     {
         LoadFactory.InitLoaders();
@@ -60,11 +62,19 @@ class Program
         Boolean successful = false;
         try
         {
+            string to_write = "";
             System.IO.StreamWriter file = new System.IO.StreamWriter($"{filename}{".txt"}");
-            foreach (Player player in player_list)
+            for (int i = 0; i < player_list.Count; i++)
             {
-                file.Write(player.Save());
+                if (i < player_list.Count - 1)
+                {
+                    to_write += $"{player_list[i].Save()}{OBJ_SEPERATOR}";
+                    continue;
+                }
+                to_write += $"{player_list[i].Save()}";
+
             }
+            file.Write(to_write);
             file.Close();
             successful = true;
         }
@@ -88,6 +98,8 @@ class LoadFactory
     {
         loaders.Add(Player.TOKEN, (string i) => { return new Player(i); });
         loaders.Add(SimpleGoal.TOKEN, (string i) => { return new SimpleGoal(i); });
+        loaders.Add(EternalGoal.TOKEN, (string i) => { return new EternalGoal(i); });
+        loaders.Add(ChecklistGoal.TOKEN, (string i) => { return new ChecklistGoal(i); });
     }
     public static IFileable LoadObj(string token, string data_in)
     {
@@ -125,11 +137,14 @@ class Player : IFileable, IMenuItem
     {
         return null;
     }
-    public void AddPoints(int points_to_add) {
+    public void AddPoints(int points_to_add)
+    {
         _earned_points += points_to_add;
         //check for cool titles
         decimal points_bracket = Math.Floor((decimal)(_earned_points / 500));
-        switch (points_bracket) {
+        string previous_title = _player_title;
+        switch (points_bracket)
+        {
             case 0:
                 _player_title = "Vaguely Self-Driven";
                 break;
@@ -150,8 +165,9 @@ class Player : IFileable, IMenuItem
                 break;
             default:
                 _player_title = "Excellently Self-Driven";
-            break;
+                break;
         }
+        if (_player_title != previous_title) Console.WriteLine($"Your title is now {_player_title}! Congratulations!");
     }
     public void Load(string to_load)
     {
@@ -170,10 +186,14 @@ class Player : IFileable, IMenuItem
 
     public string Save()
     {
+        if(_goal_list.Count <= 0) {
+            _goal_list.Add(Program.FILLER_GOAL);
+        }
         string saved_goals = "";
         for (int i = 0; i < _goal_list.Count; i++)
         {
-            if(i < _goal_list.Count - 1) {
+            if (i < _goal_list.Count - 1)
+            {
                 saved_goals = $"{saved_goals}{_goal_list[i].Save()}{SEPERATOR}";
                 continue;
             }
@@ -199,8 +219,18 @@ class Player : IFileable, IMenuItem
         {
             this.AddGoal();
         });
-        player_menu.AddOption("Make Progress on Goals", () => {
-            
+        player_menu.AddOption("Make Progress on Goals", () =>
+        {
+            Menu sub_goal_menu = new Menu();
+            foreach (Goal goal in _goal_list)
+            {
+                sub_goal_menu.AddOption(goal, (IMenuItem i) => { Goal tmpgoal = (Goal)i; this.AddPoints(tmpgoal.GetPointsToAdd()); });
+            }
+            sub_goal_menu.DisplayMenuLooping();
+        });
+        player_menu.AddOption("View Points", () => {
+            Console.WriteLine($"Your current title is: {_player_title}");
+            Console.WriteLine($"Your current points: {_earned_points}");
         });
         player_menu.DisplayMenu();
     }
@@ -225,6 +255,7 @@ class Player : IFileable, IMenuItem
                     break;
                 case "2":
                     Console.WriteLine("Please input a point value for when this item is completed.");
+                    _goal_list.Add(new EternalGoal(tmpname, tmpdesc, int.Parse(Console.ReadLine())));
                     break;
                 case "3":
                     Console.WriteLine("Please input the amount of desired repetitions.");
@@ -233,6 +264,7 @@ class Player : IFileable, IMenuItem
                     int tmpminorval = int.Parse(Console.ReadLine());
                     Console.WriteLine("Please input the value when it is finished.");
                     int tmpmajorval = int.Parse(Console.ReadLine());
+                    _goal_list.Add(new ChecklistGoal(tmpname, tmpdesc, tmpmajorval, tmpNumRepeat, tmpminorval));
                     break;
                 default:
                     Console.WriteLine("Type not recognized, please Try again.");
@@ -246,7 +278,7 @@ class Player : IFileable, IMenuItem
     }
 }
 
-class Goal : IFileable
+class Goal : IFileable, IMenuItem
 {
     public const string GOAL_SEPORATOR = "^";
     protected string _name = "Unloaded Error";
@@ -265,46 +297,48 @@ class Goal : IFileable
         this.Load(load_data);
     }
 
-    public virtual void UpdateGoal(Player player)
+    public virtual void UpdateGoal()
     {
-        if(!_completed) {
-            player.AddPoints(_reward_on_complete);
+        if (!_completed)
+        {
             Console.WriteLine("You have completed this goal!");
-        } else {
+        }
+        else
+        {
             Console.WriteLine("You have already completed this goal!");
         }
         _completed = true;
     }
-
-    public virtual string GetFormatedLong()
+    public virtual int GetPointsToAdd()
     {
-        return null;
-    }
-
-    public virtual string GetFormatedShort()
-    {
-        return null;
+        return _reward_on_complete;
     }
     public virtual string GetToken()
     {
         return null;
     }
-    public void Load(string to_load)
+    public virtual void Load(string to_load)
     {
         string[] tmp_data = to_load.Split(GOAL_SEPORATOR);
         _name = tmp_data[0];
         _desc = tmp_data[1];
         _reward_on_complete = int.Parse(tmp_data[2]);
+        _completed = Boolean.Parse(tmp_data[3]);
     }
 
-    public string Save()
+    public virtual string Save()
     {
-        return $"{GetToken()}{GOAL_SEPORATOR}{_name}{GOAL_SEPORATOR}{_desc}{GOAL_SEPORATOR}{_reward_on_complete}";
+        return $"{GetToken()}{GOAL_SEPORATOR}{_name}{GOAL_SEPORATOR}{_desc}{GOAL_SEPORATOR}{_reward_on_complete}{GOAL_SEPORATOR}{_completed}";
     }
 
-    public string GetMenuDisplay()
+    public virtual string GetName()
     {
-        return $"[{(_completed ? "X": " ")}]{_name} - {_desc}";
+        return $"[{(_completed ? "X" : " ")}]{_name} - {_desc}";
+    }
+
+    public void RunOption()
+    {
+        UpdateGoal();
     }
 }
 
@@ -313,6 +347,80 @@ class SimpleGoal : Goal
     public const string TOKEN = "simplegoal";
     public SimpleGoal(string name, string desc, int reward) : base(name, desc, reward) { }
     public SimpleGoal(string load_data) : base(load_data) { }
+    public override string GetToken()
+    {
+        return TOKEN;
+    }
+}
+class EternalGoal : Goal
+{
+    public const string TOKEN = "eternalgoal";
+    public EternalGoal(string name, string desc, int reward) : base(name, desc, reward) { }
+    public EternalGoal(string load_data) : base(load_data) { }
+    public override void UpdateGoal()
+    {
+        Console.WriteLine("You have made progress on this goal! Keep up the good work!");
+    }
+    public override string GetToken()
+    {
+        return TOKEN;
+    }
+}
+class ChecklistGoal : Goal
+{
+    public const string TOKEN = "checkgoal";
+    protected int _times_to_repeat;
+    protected int _reward_on_repeat;
+    protected int _times_repeated;
+    public ChecklistGoal(string name, string desc, int reward, int times_to_repeat, int reward_on_repeat) : base(name, desc, reward)
+    {
+        _times_to_repeat = times_to_repeat;
+        _reward_on_repeat = reward_on_repeat;
+        _times_repeated = 0;
+    }
+    public ChecklistGoal(string load_data) : base(load_data) { }
+    public override void UpdateGoal()
+    {
+        if (_completed)
+        {
+            Console.WriteLine("You have already completed this goal!");
+            return;
+        }
+        if (_times_to_repeat > _times_repeated)
+        {
+            Console.WriteLine("You have made progress on this goal! Keep up the good work!");
+            _times_repeated++;
+            return;
+        }
+        Console.WriteLine("You have completed this goal!");
+    }
+    public override string GetName()
+    {
+        return $"[{(_completed ? "X" : " ")}] [{_times_repeated} / {_times_to_repeat}] {_name} - {_desc}";
+    }
+    public override string Save()
+    {
+        return $"{GetToken()}{GOAL_SEPORATOR}{_name}{GOAL_SEPORATOR}{_desc}{GOAL_SEPORATOR}{_reward_on_complete}{GOAL_SEPORATOR}{_times_to_repeat}{GOAL_SEPORATOR}{_reward_on_repeat}{GOAL_SEPORATOR}{_times_repeated}{GOAL_SEPORATOR}{_completed}";
+    }
+    public override void Load(string to_load)
+    {
+        string[] tmp_data = to_load.Split(GOAL_SEPORATOR);
+        _name = tmp_data[0];
+        _desc = tmp_data[1];
+        _reward_on_complete = int.Parse(tmp_data[2]);
+        _times_to_repeat = int.Parse(tmp_data[3]);
+        _reward_on_repeat = int.Parse(tmp_data[4]);
+        _times_repeated = int.Parse(tmp_data[5]);
+        _completed = Boolean.Parse(tmp_data[6]);
+    }
+    public override int GetPointsToAdd()
+    {
+        if (_times_to_repeat > _times_repeated)
+        {
+            return _reward_on_repeat;
+        }
+        return _reward_on_complete;
+    }
     public override string GetToken()
     {
         return TOKEN;

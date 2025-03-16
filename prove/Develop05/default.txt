@@ -1,5 +1,11 @@
 player
-joe
-Beginner
+Peter
+Vaguely Self-Driven
+100
+checkgoal^Repeating^This should repeat!^5^10^50^2^False
+|
+player
+Gerald
+Vaguely Self-Driven
 0
-simplegoal^hgwuh^gojr^49
+simplegoal^Make a goal^Use this program to make a goal.^100^False

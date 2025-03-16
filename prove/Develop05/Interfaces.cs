@@ -6,7 +6,7 @@ interface IFileable {
     public string GetToken();
 }
 
-interface IMenuItem
+public interface IMenuItem
 {
     public string GetName();
     public void RunOption();
