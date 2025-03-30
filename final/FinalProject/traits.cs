@@ -4,6 +4,8 @@ static class Trait {
     public const byte CAN_DAMAGE = 2;
     public const byte INCORPOREAL = 3;
 
+    public const byte NO_INTERACTION_ABSOLUTE = 4;
+
 
     //Component consts
     public const byte IS_INTERAL = 40;
