@@ -5,12 +5,12 @@ class Playfield {
 
 
     public void registerAtom(Atom atom) {
-        if (atom.hasMind()) mindsInPlay.Add(atom.getMind());
+        if (atom.HasMind()) mindsInPlay.Add(atom.getMind());
         inPlay.Add(atom);
     } //if performance issues (unlikely) then make one that does not check for a mind
 
     public void deregisterAtom(Atom atom) {
-        if (atom.hasMind()) mindsInPlay.Remove(atom.getMind());
+        if (atom.HasMind()) mindsInPlay.Remove(atom.getMind());
         inPlay.Remove(atom);
     }
 

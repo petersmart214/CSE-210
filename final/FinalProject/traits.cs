@@ -6,6 +6,8 @@ static class Trait {
 
     public const byte NO_INTERACTION_ABSOLUTE = 4;
 
+    public const byte NO_INTERACTION = 5;
+
 
     //Component consts
     public const byte IS_INTERAL = 40;

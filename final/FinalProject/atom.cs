@@ -18,10 +18,10 @@ class Atom {
         this.desc = desc;
         this.loc = new Loc();
     }
-    public virtual Boolean hasMind() {
+    public virtual Boolean HasMind() {
         return this.mind != null;
     }
-    public virtual Boolean hasTrait(byte trait) {
+    public virtual Boolean HasTrait(byte trait) {
         return traits.Contains(trait);
     }
     public virtual Mind getMind() {
