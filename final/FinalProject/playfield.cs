@@ -17,4 +17,8 @@ class Playfield {
     public void displayByMind(Mind mind) {
         //TODO: add displaying the playfield.
     }
+
+    public List<Atom> GetInPlay() {
+        return inPlay;
+    }
 }
