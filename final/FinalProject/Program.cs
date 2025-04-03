@@ -6,15 +6,18 @@ class Program
     ['w', 'w', 'w', 'w', 'w'], 
     ['w', '.', '.', '.', 'w'], 
     ['w', '.', '.', '.', 'w'],
-    ['w', '.', '.', '.', 'w'], 
+    ['w', '.', 'b', '.', 'w'], 
     ['w', 'w', 'w', 'w', 'w']];
     //static List<Atom> atom_list = new List<Atom>();
     static Playfield field = new Playfield();
     static void Main(string[] args)
     {
-        Observer ob_ref = new Observer(new Loc(2, 2));
-        field.registerAtom(ob_ref);
+        Observer ob_ref = new Observer(new Loc(field, 2, 2));
+        field.RegisterAtom(ob_ref);
         ReadLoad(tmp_load);
+        ob_ref.MoveSelf(Direction.north);
+        ob_ref.MoveSelf(Direction.north);
+        ob_ref.Interact(Direction.north);
         ob_ref.DisplayAtom(field);
     }
 
@@ -25,8 +28,11 @@ class Program
                 char cc = c[ii];
                 switch (cc) {
                     case 'w':
-                        field.registerAtom(new Wall("barrier", new Loc(ii, i)));
+                        field.RegisterAtom(new Wall("barrier", new Loc(field, ii, i)));
                     break;
+                    case 'b':
+                        field.RegisterAtom(new Button("button", new Loc(field, ii, i)));
+                        break;
                     default:
                     break;
                 }

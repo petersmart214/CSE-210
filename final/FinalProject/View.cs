@@ -1,5 +1,4 @@
 class View {
-    char[][] _view_buffer;
     const int RANGE = 5;
 
     public static string GetDisplay(Playfield field) {

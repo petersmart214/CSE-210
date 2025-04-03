@@ -1,7 +1,7 @@
 class Component : Atom {
 
-    Atom parent;
+    Atom _parent;
     public Component(string name, Atom parent) : base(name) {
-        this.parent = parent;
+        this._parent = parent;
     }
 }
