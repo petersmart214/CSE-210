@@ -15,7 +15,9 @@ class Program
     static void Main(string[] args)
     {
         Observer ob_ref = new Observer(new Loc(field, 2, 2));
+        Mind player = new Mind("Me");
         field.RegisterAtom(ob_ref);
+        ob_ref.PlaceMind(player);
         ReadLoad(tmp_load);
         ob_ref.MoveSelf(Direction.north);
         ob_ref.MoveSelf(Direction.north);

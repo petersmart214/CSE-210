@@ -2,15 +2,8 @@
 
 class Mind {
     private string owner;
-    private Atom parentAtom;
-
-    public Mind(string owner, Atom parentAtom) {
+    public Mind(string owner) {
         this.owner = owner;
-        this.parentAtom = parentAtom;
-    }
-
-    public Atom getParent() {
-        return parentAtom;
     }
     public View GetView() {
         return ConstructView();
