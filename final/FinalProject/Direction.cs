@@ -9,7 +9,9 @@ class Direction {
         _dir_x = x;
         _dir_y = y;
     }
-
+    public Loc ApplyDirectionCopy(Loc loc) {
+        return ApplyDirection(loc.Copy());
+    }
     public Loc ApplyDirection(Loc loc) {
         loc.AddX(_dir_x);
         loc.AddY(_dir_y);

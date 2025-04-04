@@ -12,7 +12,7 @@ class Atom
     //vars that might be better to offload to children classes
 
     protected char _appearance = '.';
-
+    public List<Component> _components = new List<Component>();
     public Atom(string name)
     {
         this._name = name;
@@ -49,7 +49,7 @@ class Atom
     {
         if (this._mind != null)
         {
-            this.expelCurrentMind();
+            this.ExpelCurrentMind();
         }
         this._mind = mind;
         return this;
@@ -59,7 +59,10 @@ class Atom
         this._loc = loc;
         return this;
     }
-    public virtual void expelCurrentMind()
+    public virtual void AddComponent(Component comp) {
+        _components.Add(comp);
+    }
+    public virtual void ExpelCurrentMind()
     {
         if (_mind != null)
         {
@@ -80,7 +83,7 @@ class Atom
         Console.WriteLine(View.GetDisplay(field));
     }
     public void Interact(Direction dir) {
-        Atom obj_int = GetLoc().GetField().AtomAtLoc(dir.ApplyDirection(GetLoc()));
+        Atom obj_int = GetLoc().GetField().AtomAtLoc(dir.ApplyDirectionCopy(GetLoc()));
         if((obj_int != null) && (obj_int is IInteractable)) {
             IInteractable tmp_int = (IInteractable)obj_int;
             tmp_int.OnInteract(this);
