@@ -1,12 +1,9 @@
 class Component : Atom {
 
     Atom _parent;
-    protected List<Interaction> _interactions = new List<Interaction>();
+    
     public Component(string name, Atom parent) : base(name) {
         this._parent = parent;
-    }
-    public List<Interaction> GetInteractions() {
-        return _interactions;
     }
 }
 
@@ -22,6 +19,7 @@ class LinkedComponent : Component, IComponentLinkable {
 
     public bool RecieveLink(IComponentLinkable to_link)
     {
+        if(to_link == this) return false;
         _linked_input.Add(to_link);
         return true;
     }
@@ -40,6 +38,7 @@ class LinkedComponent : Component, IComponentLinkable {
     {
         if(to_link.RecieveLink(this)) {
             _linked_output.Add(to_link);
+            to_link.SendComponent(this);
             return true;
         }
         return false;
@@ -96,5 +95,34 @@ class PowerSocket : LinkedComponent, IInteractable
             PowerSocket tmp = (PowerSocket)interactor;
             tmp.SendLink(this);
         }
+    }
+}
+
+class Generator : LinkedComponent, IInteractable, IProvider
+{
+    Boolean _activated = false;
+    public Generator(string name, Atom parent) : base(name, parent)
+    {
+        _interactions.Add(new Interaction("Turn Generator On", interactor=>{_activated = true;}));
+        _interactions.Add(new Interaction("Turn Generator Off", interactor=>{_activated = false;}));
+        _interactions.Add(new Interaction("Check Generator Status", interactor=>{Console.Clear(); Console.WriteLine($"The generator is {(_activated ? "Working" : "Unpowered")}"); Console.ReadLine();}));
+        _interactions.Add(new Interaction("Grab Connector", GrabConnector));
+    }
+
+    public bool GetPower()
+    {
+        return _activated;
+    }
+
+    public void GrabConnector(Atom interactor) {
+        if(interactor is GrippyCreature) {
+            GrippyCreature tmp = (GrippyCreature)interactor;
+            tmp.GrabAtom(this);
+        }
+    }
+
+    public void OnInteract(Atom interactor)
+    {
+        Interaction.OpenQueryMenu(interactor, _interactions);
     }
 }

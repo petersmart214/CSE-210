@@ -14,6 +14,7 @@ class Atom
     //vars that might be better to offload to children classes
 
     protected char _appearance = '.';
+    protected List<Interaction> _interactions = new List<Interaction>();
     public List<Component> _components = new List<Component>();
     public Atom(string name)
     {
@@ -88,11 +89,17 @@ class Atom
         Console.Clear();
         Console.WriteLine(View.GetDisplay(field));
     }
+    public List<Interaction> GetInteractions() {
+        return _interactions;
+    }
     public virtual void Interact(Direction dir, Atom atom = null) {
         Atom obj_int = GetLoc().GetField().AtomAtLoc(dir.ApplyDirectionCopy(GetLoc()));
         if((obj_int != null) && (obj_int is IInteractable)) {
             IInteractable tmp_int = (IInteractable)obj_int;
-            if(atom == null) tmp_int.OnInteract(this);
+            if(atom == null) {
+                tmp_int.OnInteract(this);
+                return;
+            }
             tmp_int.OnInteract(atom);
         }
     }

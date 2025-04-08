@@ -4,14 +4,13 @@ class Program
 {
     static char[][] tmp_load = [
     ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'], 
-    ['w', 's', '.', '.', '.', '.', '.', '.', '.', 'w'], 
+    ['w', 'O', '.', 'M', '.', '.', '.', '.', '.', 'w'], 
     ['w', '.', '.', '.', '.', '.', '.', '.', '.', 'w'],
-    ['w', '.', 'b', '.', '.', '.', '.', '.', '.', 'w'], 
+    ['w', '.', 'L', '.', '.', '.', '.', '.', '.', 'w'], 
     ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w']];
     //static List<Atom> atom_list = new List<Atom>();
     static Playfield field = new Playfield();
-    static Button b;
-    static Button s;
+    static List<IProcessable> proc_list = new List<IProcessable>();
     static void Main(string[] args)
     {
         GrippyCreature ob_ref = new GrippyCreature("The Fool", '@', new Loc(field, 2, 2));
@@ -19,10 +18,11 @@ class Program
         field.RegisterAtom(ob_ref);
         ob_ref.PlaceMind(player);
         ReadLoad(tmp_load);
-        IComponentLinkable btmp = (IComponentLinkable)b._components.ElementAt(0);
-        IComponentLinkable stmp = (IComponentLinkable)s._components.ElementAt(0);
         Console.Clear();
         while (true) {
+            foreach(IProcessable proc in proc_list) {
+                proc.Process();
+            }
         ob_ref.DisplayAtom(field);
         if(Console.KeyAvailable) {
             ob_ref.RunAbilityByKey(Console.ReadKey().Key.ToString());
@@ -40,17 +40,19 @@ class Program
                     case 'w':
                         field.RegisterAtom(new Wall("barrier", new Loc(field, ii, i)));
                     break;
-                    case 'b':
-                        Button tmp = new Button("button", new Loc(field, ii, i));
-                        tmp.AddComponent(new PowerSocket("notsource", tmp, false));
-                        field.RegisterAtom(tmp);
-                        b = tmp;
+                    case 'O':
+                        Lamp lamp = new Lamp("Bright Lamp", new Loc(field, ii, i));
+                        proc_list.Add(lamp);
+                        field.RegisterAtom(lamp);
                         break;
-                    case 's':
-                        Button ttmp = new Button("socketbutton", new Loc(field, ii, i));
-                        ttmp.AddComponent(new PowerSocket("source", ttmp, true));
-                        field.RegisterAtom(ttmp);
-                        s = ttmp;
+                    case 'L':
+                        Lever lever = new Lever("Old Lever", new Loc(field, ii, i));
+                        field.RegisterAtom(lever);
+                        break;
+                    case 'M':
+                        GenericMachine gmach = new GenericMachine("Ancient Generator", new Loc(field, ii, i));
+                        gmach.AddComponent(new Generator("The Core", gmach));
+                        field.RegisterAtom(gmach);
                         break;
                     default:
                     break;
