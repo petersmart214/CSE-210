@@ -1,5 +1,4 @@
 class Creature : MoveableAtom {
-    private Component[] _parts;
     new protected byte[] _traits = [Trait.CAN_MOVE];
     protected List<Ability> _abilities = new List<Ability>();
 
@@ -19,13 +18,47 @@ class Creature : MoveableAtom {
         if (HasTrait(Trait.NO_INTERACTION_ABSOLUTE) || HasTrait(Trait.NO_INTERACTION)) return false;
         return false;
     }
-    protected void InitAbilities() {
-        _abilities.Add(new Ability("Go North", ()=>{this.MoveSelf(Direction.north);}));
-        _abilities.Add(new Ability("Go Sorth", ()=>{this.MoveSelf(Direction.south);}));
-        _abilities.Add(new Ability("Go East", ()=>{this.MoveSelf(Direction.east);}));
-        _abilities.Add(new Ability("Go West", ()=>{this.MoveSelf(Direction.west);}));
+    protected virtual void InitAbilities() {
+        _abilities.Add(new Ability("Go North", "W", ()=>{this.MoveSelf(Direction.north);}));
+        _abilities.Add(new Ability("Go Sorth", "S", ()=>{this.MoveSelf(Direction.south);}));
+        _abilities.Add(new Ability("Go East", "D", ()=>{this.MoveSelf(Direction.east);}));
+        _abilities.Add(new Ability("Go West", "A", ()=>{this.MoveSelf(Direction.west);}));
+        _abilities.Add(new Ability("Interact", "Enter", ()=>{this.Interact(_direction_facing);}));
     }
-    public List<Ability> GetAbilities() {
-        return _abilities;
+    public void RunAbilityByKey(string key) {
+        foreach(Ability i in _abilities) {
+            if(i.GetHotkey() == key) {
+                i.GetAction()();
+                break;
+            }
+        }
+    }
+}
+
+class GrippyCreature : Creature
+{
+    Atom _grabbed = null;
+    public GrippyCreature(string name, char appearance, Loc loc) : base(name, appearance, loc)
+    {
+
+    }
+    public void GrabAtom(Atom to_grab) {
+        if(_grabbed != null) {DropAtom();}
+        _grabbed = to_grab;
+    }
+    public void DropAtom() {
+        _grabbed = null;
+    }
+    public override void Interact(Direction to_interact, Atom atom = null) {
+        base.Interact(to_interact, _grabbed);
+    }
+    public override void DisplayAtom(Playfield field)
+    {
+        base.DisplayAtom(field);
+        if(_grabbed != null) Console.WriteLine(_grabbed.GetName());
+    }
+    protected override void InitAbilities() {
+        base.InitAbilities();
+        _abilities.Add(new Ability("Drop Item", "Q", ()=>{DropAtom();}));
     }
 }

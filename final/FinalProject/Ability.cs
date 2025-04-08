@@ -13,4 +13,10 @@ class Ability {
         _hotkey = hotkey;
         _action = action;
     }
+    public string GetHotkey() {
+        return _hotkey;
+    }
+    public Action GetAction() {
+        return _action;
+    }
 }

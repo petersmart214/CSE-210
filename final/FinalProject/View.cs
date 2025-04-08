@@ -1,5 +1,5 @@
 class View {
-    const int RANGE = 5;
+    const int RANGE = 10;
 
     public static string GetDisplay(Playfield field) {
         List<string> output = new List<string>();
@@ -19,6 +19,7 @@ class View {
             t[tmp_loc.x] = tmp_app;
             output[tmp_loc.y] = new string(t);
         }
+        output.Reverse();
         return string.Join('\n', output);
     }
 }

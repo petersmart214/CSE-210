@@ -1,13 +1,18 @@
 class Component : Atom {
 
     Atom _parent;
+    protected List<Interaction> _interactions = new List<Interaction>();
     public Component(string name, Atom parent) : base(name) {
         this._parent = parent;
+    }
+    public List<Interaction> GetInteractions() {
+        return _interactions;
     }
 }
 
 class LinkedComponent : Component, IComponentLinkable {
-    List<IComponentLinkable> _linked = new List<IComponentLinkable>();
+    List<IComponentLinkable> _linked_input = new List<IComponentLinkable>();
+    List<IComponentLinkable> _linked_output = new List<IComponentLinkable>();
 
     public LinkedComponent(string name, Atom parent) : base(name, parent)
     {
@@ -17,13 +22,13 @@ class LinkedComponent : Component, IComponentLinkable {
 
     public bool RecieveLink(IComponentLinkable to_link)
     {
-        _linked.Add(to_link);
+        _linked_input.Add(to_link);
         return true;
     }
 
     public bool RecieveUnlink(IComponentLinkable to_delink)
     {
-        return _linked.Remove(to_delink);
+        return _linked_input.Remove(to_delink);
     }
 
     public void SendComponent(IComponentLinkable data)
@@ -33,13 +38,18 @@ class LinkedComponent : Component, IComponentLinkable {
 
     public bool SendLink(IComponentLinkable to_link)
     {
-        if(to_link.RecieveLink(this)) return true;
+        if(to_link.RecieveLink(this)) {
+            _linked_output.Add(to_link);
+            return true;
+        }
         return false;
     }
 
     public bool SendUnlink(IComponentLinkable to_delink)
     {
-        if(to_delink.RecieveUnlink(this)) return true;
+        if(to_delink.RecieveUnlink(this)) {
+            if(_linked_output.Remove(to_delink)) return true;
+        }
         return false;
     }
 }
@@ -52,6 +62,8 @@ class PowerSocket : LinkedComponent, IInteractable
     {
         _source = state;
         _powered = state;
+        _interactions.Add(new Interaction("Grab Connector", GrabConnector));
+        _interactions.Add(new Interaction("Plug in a Connector", interactor => {this.OnInteract(interactor);}));
     }
     public override void Trigger(IComponentLinkable data)
     {
@@ -65,6 +77,12 @@ class PowerSocket : LinkedComponent, IInteractable
             tdata.SetPowered(false);
         }
     }
+    public void GrabConnector(Atom interactor) {
+        if(interactor is GrippyCreature) {
+            GrippyCreature tmp = (GrippyCreature)interactor;
+            tmp.GrabAtom(this);
+        }
+    }
     public void SetPowered(Boolean state) {
         _powered = state;
     } 
@@ -74,6 +92,9 @@ class PowerSocket : LinkedComponent, IInteractable
 
     public void OnInteract(Atom interactor)
     {
-        Console.WriteLine($"This socket is: {_powered}");
+        if(interactor is PowerSocket) {
+            PowerSocket tmp = (PowerSocket)interactor;
+            tmp.SendLink(this);
+        }
     }
 }

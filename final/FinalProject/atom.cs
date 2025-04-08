@@ -1,4 +1,6 @@
-
+/// <summary>
+/// the base of (most) everything, basically, if it exists, its an atom or made of them
+/// </summary>
 
 class Atom
 {
@@ -74,25 +76,31 @@ class Atom
     {
         return _appearance;
     }
+    public virtual string GetName() {
+        return _name;
+    }
     public virtual Loc GetLoc()
     {
         return _loc;
     }
     public virtual void DisplayAtom(Playfield field)
     {
+        Console.Clear();
         Console.WriteLine(View.GetDisplay(field));
     }
-    public void Interact(Direction dir) {
+    public virtual void Interact(Direction dir, Atom atom = null) {
         Atom obj_int = GetLoc().GetField().AtomAtLoc(dir.ApplyDirectionCopy(GetLoc()));
         if((obj_int != null) && (obj_int is IInteractable)) {
             IInteractable tmp_int = (IInteractable)obj_int;
-            tmp_int.OnInteract(this);
+            if(atom == null) tmp_int.OnInteract(this);
+            tmp_int.OnInteract(atom);
         }
     }
 }
 
 class MoveableAtom : Atom, IMoveable
 {
+    protected Direction _direction_facing = Direction.north;
     public MoveableAtom(string name, char appearance, Loc loc) : base(name, appearance, loc)
     {
     }
@@ -100,5 +108,6 @@ class MoveableAtom : Atom, IMoveable
     public void MoveSelf(Direction to_move)
     {
         to_move.ApplyDirectionColliding(GetLoc());
+        _direction_facing = to_move;
     }
 }

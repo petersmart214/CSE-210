@@ -26,11 +26,26 @@ class Button : Structure, IInteractable
     }
     public void OnInteract(Atom interactor)
     {
+        OpenQueryMenu(interactor);
+    }
+    protected void OpenQueryMenu(Atom interactor) {
+        List<Interaction> interactions = new List<Interaction>();
         foreach(Component c in _components) {
-            if(!(c is IInteractable)) return;
-            IInteractable tc = (IInteractable)c;
-            tc.OnInteract(this);
+            interactions.AddRange(c.GetInteractions());
         }
+        Console.Clear();
+        for(int i = 0; i < interactions.Count; i ++) {
+            Console.WriteLine($"{i+1}: {interactions.ElementAt(i).GetName()}");
+        }
+        int choice;
+        try {
+            choice = int.Parse(Console.ReadLine()) - 1;
+        } catch {
+            Console.WriteLine("Unable to parse choice!");
+            Console.ReadLine();
+            return;
+        }
+        interactions.ElementAt(choice).RunAction(interactor);
     }
 }
 class Machine : Structure

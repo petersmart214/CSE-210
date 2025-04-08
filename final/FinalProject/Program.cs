@@ -3,31 +3,32 @@ using System;
 class Program
 {
     static char[][] tmp_load = [
-    ['w', 'w', 'w', 'w', 'w'], 
-    ['w', 's', '.', '.', 'w'], 
-    ['w', '.', '.', '.', 'w'],
-    ['w', '.', 'b', '.', 'w'], 
-    ['w', 'w', 'w', 'w', 'w']];
+    ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'], 
+    ['w', 's', '.', '.', '.', '.', '.', '.', '.', 'w'], 
+    ['w', '.', '.', '.', '.', '.', '.', '.', '.', 'w'],
+    ['w', '.', 'b', '.', '.', '.', '.', '.', '.', 'w'], 
+    ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w']];
     //static List<Atom> atom_list = new List<Atom>();
     static Playfield field = new Playfield();
     static Button b;
     static Button s;
     static void Main(string[] args)
     {
-        Observer ob_ref = new Observer(new Loc(field, 2, 2));
+        GrippyCreature ob_ref = new GrippyCreature("The Fool", '@', new Loc(field, 2, 2));
         Mind player = new Mind("Me");
         field.RegisterAtom(ob_ref);
         ob_ref.PlaceMind(player);
         ReadLoad(tmp_load);
-        ob_ref.MoveSelf(Direction.north);
-        ob_ref.MoveSelf(Direction.north);
         IComponentLinkable btmp = (IComponentLinkable)b._components.ElementAt(0);
         IComponentLinkable stmp = (IComponentLinkable)s._components.ElementAt(0);
-        btmp.SendLink(stmp);
-        stmp.SendComponent(btmp);
-        
-        ob_ref.Interact(Direction.north);
+        Console.Clear();
+        while (true) {
         ob_ref.DisplayAtom(field);
+        if(Console.KeyAvailable) {
+            ob_ref.RunAbilityByKey(Console.ReadKey().Key.ToString());
+        }
+        Thread.Sleep(200);
+        }
     }
 
     public static void ReadLoad(char[][] list) {
