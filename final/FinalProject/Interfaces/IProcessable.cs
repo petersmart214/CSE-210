@@ -1,3 +1,4 @@
-interface IProcessable {
+interface IProcessable
+{
     public void Process();
 }

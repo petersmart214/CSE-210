@@ -1,3 +1,4 @@
-interface IInteractable {
+interface IInteractable
+{
     public void OnInteract(Atom interactor);
 }

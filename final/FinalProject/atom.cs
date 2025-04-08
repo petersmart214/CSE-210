@@ -62,7 +62,8 @@ class Atom
         this._loc = loc;
         return this;
     }
-    public virtual void AddComponent(Component comp) {
+    public virtual void AddComponent(Component comp)
+    {
         _components.Add(comp);
     }
     public virtual void ExpelCurrentMind()
@@ -77,7 +78,8 @@ class Atom
     {
         return _appearance;
     }
-    public virtual string GetName() {
+    public virtual string GetName()
+    {
         return _name;
     }
     public virtual Loc GetLoc()
@@ -89,14 +91,18 @@ class Atom
         Console.Clear();
         Console.WriteLine(View.GetDisplay(field));
     }
-    public List<Interaction> GetInteractions() {
+    public List<Interaction> GetInteractions()
+    {
         return _interactions;
     }
-    public virtual void Interact(Direction dir, Atom atom = null) {
+    public virtual void Interact(Direction dir, Atom atom = null)
+    {
         Atom obj_int = GetLoc().GetField().AtomAtLoc(dir.ApplyDirectionCopy(GetLoc()));
-        if((obj_int != null) && (obj_int is IInteractable)) {
+        if ((obj_int != null) && (obj_int is IInteractable))
+        {
             IInteractable tmp_int = (IInteractable)obj_int;
-            if(atom == null) {
+            if (atom == null)
+            {
                 tmp_int.OnInteract(this);
                 return;
             }

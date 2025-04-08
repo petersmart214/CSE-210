@@ -3,10 +3,10 @@ using System;
 class Program
 {
     static char[][] tmp_load = [
-    ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'], 
-    ['w', 'O', '.', 'M', '.', '.', '.', '.', '.', 'w'], 
+    ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'],
+    ['w', 'O', '.', 'M', '.', '.', '.', '.', '.', 'w'],
     ['w', '.', '.', '.', '.', '.', '.', '.', '.', 'w'],
-    ['w', '.', 'L', '.', '.', '.', '.', '.', '.', 'w'], 
+    ['w', '.', 'L', '.', '.', '.', '.', '.', '.', 'w'],
     ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w']];
     //static List<Atom> atom_list = new List<Atom>();
     static Playfield field = new Playfield();
@@ -19,27 +19,34 @@ class Program
         ob_ref.PlaceMind(player);
         ReadLoad(tmp_load);
         Console.Clear();
-        while (true) {
-            foreach(IProcessable proc in proc_list) {
+        while (true)
+        {
+            foreach (IProcessable proc in proc_list)
+            {
                 proc.Process();
             }
-        ob_ref.DisplayAtom(field);
-        if(Console.KeyAvailable) {
-            ob_ref.RunAbilityByKey(Console.ReadKey().Key.ToString());
-        }
-        Thread.Sleep(200);
+            ob_ref.DisplayAtom(field);
+            if (Console.KeyAvailable)
+            {
+                ob_ref.RunAbilityByKey(Console.ReadKey().Key.ToString());
+            }
+            Thread.Sleep(200);
         }
     }
 
-    public static void ReadLoad(char[][] list) {
-        for(int i = 0; i < list.Length; i ++) {
+    public static void ReadLoad(char[][] list)
+    {
+        for (int i = 0; i < list.Length; i++)
+        {
             char[] c = list[i];
-            for (int ii = 0; ii < c.Length; ii ++) {
+            for (int ii = 0; ii < c.Length; ii++)
+            {
                 char cc = c[ii];
-                switch (cc) {
+                switch (cc)
+                {
                     case 'w':
                         field.RegisterAtom(new Wall("barrier", new Loc(field, ii, i)));
-                    break;
+                        break;
                     case 'O':
                         Lamp lamp = new Lamp("Bright Lamp", new Loc(field, ii, i));
                         proc_list.Add(lamp);
@@ -55,7 +62,7 @@ class Program
                         field.RegisterAtom(gmach);
                         break;
                     default:
-                    break;
+                        break;
                 }
             }
         }

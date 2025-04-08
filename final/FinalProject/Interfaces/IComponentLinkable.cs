@@ -1,4 +1,5 @@
-interface IComponentLinkable {
+interface IComponentLinkable
+{
     public Boolean SendLink(IComponentLinkable to_link);
     public Boolean RecieveLink(IComponentLinkable to_link);
     public Boolean SendUnlink(IComponentLinkable to_delink);

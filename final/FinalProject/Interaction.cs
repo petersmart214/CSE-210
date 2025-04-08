@@ -1,8 +1,10 @@
-class Interaction {
+class Interaction
+{
     public delegate void InteractionAction(Atom atom);
     string _name;
     InteractionAction _interaction;
-    public Interaction(string name, InteractionAction action) {
+    public Interaction(string name, InteractionAction action)
+    {
         _name = name;
         _interaction = action;
     }
@@ -26,10 +28,12 @@ class Interaction {
         }
         interactions.ElementAt(choice).RunAction(interactor);
     }
-    public string GetName() {
+    public string GetName()
+    {
         return _name;
     }
-    public void RunAction(Atom atom) {
+    public void RunAction(Atom atom)
+    {
         _interaction(atom);
     }
 }

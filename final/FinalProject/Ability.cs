@@ -1,22 +1,27 @@
-class Ability {
+class Ability
+{
 
     string _name;
     string _hotkey = null;
     Action _action;
 
-    public Ability(string name, Action action) {
+    public Ability(string name, Action action)
+    {
         _name = name;
         _action = action;
     }
-    public Ability(string name, string hotkey, Action action) {
+    public Ability(string name, string hotkey, Action action)
+    {
         _name = name;
         _hotkey = hotkey;
         _action = action;
     }
-    public string GetHotkey() {
+    public string GetHotkey()
+    {
         return _hotkey;
     }
-    public Action GetAction() {
+    public Action GetAction()
+    {
         return _action;
     }
 }

@@ -1,3 +1,4 @@
-interface IProvider {
+interface IProvider
+{
     public bool GetPower();
-} 
+}
