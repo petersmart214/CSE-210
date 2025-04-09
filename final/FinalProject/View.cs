@@ -1,6 +1,6 @@
 class View
 {
-    const int RANGE = 10;
+    const int RANGE = 5;
 
     public static string GetDisplay(Playfield field)
     {

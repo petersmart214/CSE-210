@@ -3,11 +3,11 @@ using System;
 class Program
 {
     static char[][] tmp_load = [
-    ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'],
-    ['w', 'O', '.', 'M', '.', '.', '.', '.', '.', 'w'],
-    ['w', '.', '.', '.', '.', '.', '.', '.', '.', 'w'],
-    ['w', '.', 'L', '.', '.', '.', '.', '.', '.', 'w'],
-    ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w']];
+    ['w', 'w', 'w', 'w', 'w'],
+    ['w', 'O', '.', 'M', 'w'],
+    ['w', '.', '.', '.', 'w'],
+    ['w', '.', 'L', '.', 'w'],
+    ['w', 'w', 'w', 'w', 'w']];
     //static List<Atom> atom_list = new List<Atom>();
     static Playfield field = new Playfield();
     static List<IProcessable> proc_list = new List<IProcessable>();
@@ -30,6 +30,7 @@ class Program
             {
                 ob_ref.RunAbilityByKey(Console.ReadKey().Key.ToString());
             }
+            Console.WriteLine("Use W, A, S, and D to move. Use Q to drop a held connector. Use Enter to interact with a device you are facing.");
             Thread.Sleep(200);
         }
     }
